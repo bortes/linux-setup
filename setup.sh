@@ -46,7 +46,6 @@ function install()
     install_from_distro "$PACKAGE_GO"
     install_from_distro "$PACKAGE_JAVA"
     install_from_distro "$PACKAGE_PYTHON"
-
     install_from_distro "$PACKAGE_RUST"
     install_from_remote "https://dot.net/v1/dotnet-install.sh" "/tmp/dotnet-install.sh" "/tmp/dotnet" $DOTNET_HOME "$DOTNET_HOME/dotnet-install.sh"
     create_local_link $DOTNET_HOME/dotnet
@@ -56,11 +55,14 @@ function install()
     dotnet-install.sh --channel "7.0" --install-dir $DOTNET_HOME
     dotnet-install.sh --channel "8.0" --install-dir $DOTNET_HOME
     install_from_script "https://get.volta.sh" "/tmp/volta.sh" "$VOLTA_HOME/bin/volta"
+    go env -w GO111MODULE=off
     volta install node@12.22
     volta install node@18.16
     volta install node@20.5
 
     # IDE
+    install_from_go "gopls" "golang.org/x/tools/gopls@latest"
+    install_from_go "dlv" "github.com/go-delve/delve/cmd/dlv@latest"
     install_from_remote "https://code.visualstudio.com/sha/download?build=stable&os=linux-x64" "/tmp/vscode.tar.gz" "/tmp/vscode/VSCode-linux-x64" $VSCODE_HOME "$VSCODE_HOME/bin/code"
     install_from_remote "https://github.com/dbeaver/dbeaver/releases/download/23.0.3/dbeaver-ce-23.0.3-linux.gtk.x86_64.tar.gz" "/tmp/dbeaver.tar.gz" "/tmp/dbeaver/dbeaver" $DBEAVER_HOME "$DBEAVER_HOME/dbeaver"
     code --extensions-dir $VSCODE_HOME/resources/app/extensions --user-data-dir /home/$SUDO_USER/.vscode --install-extension cschlosser.doxdocgen
