@@ -12,6 +12,7 @@ export INSTALL_DIR="/opt"
 export BURP_HOME="$INSTALL_DIR/burp"
 export DBEAVER_HOME="$INSTALL_DIR/dbeaver"
 export DOTNET_HOME="$INSTALL_DIR/dotnet"
+export GO_HOME="$INSTALL_DIR/go"
 export ILSPY_HOME="$INSTALL_DIR/ilspy"
 export LIQUIBASE_HOME="$INSTALL_DIR/liquibase"
 export MYSQL_HOME="$INSTALL_DIR/mysql"
@@ -32,6 +33,8 @@ function install()
 {
     # PRE-INSTALLATION
     export PATH=$PATH:/opt/bin
+    export PATH=$PATH:$VOLTA_HOME/bin
+    export PATH=$PATH:/home/$SUDO_USER/.cargo/bin
     export PATH=$PATH:/home/$SUDO_USER/go/bin
 
     # BASE
@@ -43,28 +46,31 @@ function install()
     install_from_distro "$PACKAGE_LIB_FFI"
 
     # SDK
-    install_from_distro "$PACKAGE_GO"
     install_from_distro "$PACKAGE_JAVA"
     install_from_distro "$PACKAGE_PYTHON"
     install_from_distro "$PACKAGE_RUST"
     install_from_remote "https://dot.net/v1/dotnet-install.sh" "/tmp/dotnet-install.sh" "/tmp/dotnet" $DOTNET_HOME "$DOTNET_HOME/dotnet-install.sh"
+    install_from_remote "https://go.dev/dl/go1.21.5.linux-amd64.tar.gz" "/tmp/go.tar.gz" "/tmp/go/go" $GO_HOME "$GO_HOME/bin/go"
+    install_from_script "https://get.volta.sh" "/tmp/volta.sh" "$VOLTA_HOME/bin/volta"
+    #
     create_local_link $DOTNET_HOME/dotnet
     dotnet-install.sh --channel "3.0" --install-dir $DOTNET_HOME
     dotnet-install.sh --channel "5.0" --install-dir $DOTNET_HOME
     dotnet-install.sh --channel "6.0" --install-dir $DOTNET_HOME
     dotnet-install.sh --channel "7.0" --install-dir $DOTNET_HOME
     dotnet-install.sh --channel "8.0" --install-dir $DOTNET_HOME
-    install_from_script "https://get.volta.sh" "/tmp/volta.sh" "$VOLTA_HOME/bin/volta"
-    go env -w GO111MODULE=off
+    dotnet dev-certs https --trust
     volta install node@12.22
     volta install node@18.16
     volta install node@20.5
+    change_owner /opt/volta/tmp
 
     # IDE
     install_from_go "gopls" "golang.org/x/tools/gopls@latest"
     install_from_go "dlv" "github.com/go-delve/delve/cmd/dlv@latest"
     install_from_remote "https://code.visualstudio.com/sha/download?build=stable&os=linux-x64" "/tmp/vscode.tar.gz" "/tmp/vscode/VSCode-linux-x64" $VSCODE_HOME "$VSCODE_HOME/bin/code"
     install_from_remote "https://github.com/dbeaver/dbeaver/releases/download/23.0.3/dbeaver-ce-23.0.3-linux.gtk.x86_64.tar.gz" "/tmp/dbeaver.tar.gz" "/tmp/dbeaver/dbeaver" $DBEAVER_HOME "$DBEAVER_HOME/dbeaver"
+    #
     code --extensions-dir $VSCODE_HOME/resources/app/extensions --user-data-dir /home/$SUDO_USER/.vscode --install-extension cschlosser.doxdocgen
     code --extensions-dir $VSCODE_HOME/resources/app/extensions --user-data-dir /home/$SUDO_USER/.vscode --install-extension eamodio.gitlens
     code --extensions-dir $VSCODE_HOME/resources/app/extensions --user-data-dir /home/$SUDO_USER/.vscode --install-extension eriklynd.json-tools
@@ -87,6 +93,12 @@ function install()
     install_from_distro "$PACKAGE_DOCKER"
     install_from_distro "$PACKAGE_NETWORK_BUNDLE"
     install_from_distro "$PACKAGE_NMAP"
+    install_from_go "sct" "github.com/gocaio/sct@latest"
+    install_from_node "ng" "@angular/cli"
+    install_from_node "yarn" "yarn"
+    install_from_python "ansible" "ansible"
+    install_from_python "aws" "awscli"
+    install_from_python "az" "azure-cli"
     install_from_remote "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz" "/tmp/ngrok.tar.gz" "/tmp/ngrok" $NGROK_HOME "$NGROK_HOME/ngrok"
     install_from_remote "https://downloads.mysql.com/archives/get/p/23/file/mysql-8.0.32-linux-glibc2.12-x86_64.tar.xz" "/tmp/mysql.tar.gz" "/tmp/mysql/mysql-8.0.32-linux-glibc2.12-x86_64" $MYSQL_HOME "$MYSQL_HOME/bin/mysqldump"
     install_from_remote "https://downloads.rclone.org/v1.63.1/rclone-v1.63.1-linux-amd64.zip" "/tmp/rclone.zip" "/tmp/rclone/rclone-v1.63.1-linux-amd64" $RCLONE_HOME "$RCLONE_HOME/rclone"
@@ -94,14 +106,11 @@ function install()
     install_from_remote "https://github.com/liquibase/liquibase/releases/download/v4.21.0/liquibase-4.21.0.tar.gz" "/tmp/liquibase.tar.gz" "/tmp/liquibase" $LIQUIBASE_HOME "$LIQUIBASE_HOME/liquibase"
     install_from_remote "https://releases.hashicorp.com/nomad/1.6.1/nomad_1.6.1_linux_amd64.zip" "/tmp/nomad.zip" "/tmp/nomad" $NOMAD_HOME "$NOMAD_HOME/nomad"
     install_from_remote "https://releases.hashicorp.com/terraform/1.5.4/terraform_1.5.4_linux_amd64.zip" "/tmp/terraform.zip" "/tmp/terraform" $TERRAFORM_HOME "$TERRAFORM_HOME/terraform"
-    install_from_go "sct" "github.com/gocaio/sct@latest"
-    install_from_python "aws" "awscli"
-    install_from_python "az" "azure-cli"
     install_from_rust "tokei" "tokei"
 
     # APPLICATION
-    # install_from_distro "$PACKAGE_MELD"
     install_from_flatpak "flatseal" "com.github.tchx84.Flatseal"
+    install_from_flatpak "ghidra" "org.ghidra_sre.Ghidra"
     install_from_flatpak "insomnia" "rest.insomnia.Insomnia"
     install_from_flatpak "jmeter" "org.apache.jmeter"
     install_from_flatpak "meld" "org.gnome.meld"
@@ -144,7 +153,7 @@ function install()
         source $(which az.completion.sh)
 
         # path
-        export PATH=\$PATH:\$HOME/go/bin:\$VOLTA_HOME/bin:/opt/bin
+        export PATH=\$PATH:\$HOME/.cargo/bin:\$HOME/go/bin:\$VOLTA_HOME/bin:/opt/bin
     "
 
     create_local_application "dbeaver.desktop" "
