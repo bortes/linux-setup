@@ -274,6 +274,21 @@ function install_from_go()
     fi
 }
 
+function install_from_node()
+{
+    local binary_name="$1"
+    local package_name="$2"
+
+    if binary_exists $binary_name
+    then
+        log_info "$binary_name ja instalado -> $package_name"
+    else
+        sudo --user $SUDO_USER --set-home --shell npm install --global "$package_name"
+
+        log_info "$binary_name instalado com sucesso"
+    fi
+}
+
 function install_from_python()
 {
     local binary_name="$1"
@@ -298,7 +313,7 @@ function install_from_rust()
     then
         log_info "$binary_name ja instalado -> $package_name"
     else
-        cargo install $package_name
+        sudo --user $SUDO_USER --set-home --shell cargo install $package_name
 
         log_info "$package_name instalado com sucesso"
     fi
