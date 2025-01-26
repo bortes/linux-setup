@@ -9,6 +9,7 @@ source src/package.sh
 
 export INSTALL_DIR="/opt"
 
+export BITWARDEN_HOME="$INSTALL_DIR/bitwarden"
 export BURP_HOME="$INSTALL_DIR/burp"
 export DBEAVER_HOME="$INSTALL_DIR/dbeaver"
 export DOTNET_HOME="$INSTALL_DIR/dotnet"
@@ -94,6 +95,7 @@ function install()
     install_from_distro "$PACKAGE_NETWORK_BUNDLE"
     install_from_distro "$PACKAGE_NMAP"
     install_from_go "sct" "github.com/gocaio/sct@latest"
+    install_from_go "glab" "gitlab.com/gitlab-org/cli/cmd/glab@main"
     install_from_node "ng" "@angular/cli"
     install_from_node "yarn" "yarn"
     install_from_python "ansible" "ansible"
@@ -104,6 +106,7 @@ function install()
     install_from_remote "https://downloads.rclone.org/v1.63.1/rclone-v1.63.1-linux-amd64.zip" "/tmp/rclone.zip" "/tmp/rclone/rclone-v1.63.1-linux-amd64" $RCLONE_HOME "$RCLONE_HOME/rclone"
     install_from_remote "https://github.com/drwetter/testssl.sh/archive/refs/heads/3.2.zip" "/tmp/testssl.zip" "/tmp/testssl/testssl.sh-3.2" $TESTSSL_HOME "$TESTSSL_HOME/testssl.sh"
     install_from_remote "https://github.com/liquibase/liquibase/releases/download/v4.21.0/liquibase-4.21.0.tar.gz" "/tmp/liquibase.tar.gz" "/tmp/liquibase" $LIQUIBASE_HOME "$LIQUIBASE_HOME/liquibase"
+    install_from_remote "https://vault.bitwarden.com/download/?app=cli&platform=linux&__hstc=195745471.7fd52644147915e652973fdbe116f152.1712173085722.1712173085723.1712214027014.2&__hssc=195745471.2.1712214027014&__hsfp=3380657866" "/tmp/bitwarden.zip" "/tmp/bitwarden" $BITWARDEN_HOME "$BITWARDEN_HOME/bw"
     install_from_remote "https://releases.hashicorp.com/nomad/1.6.1/nomad_1.6.1_linux_amd64.zip" "/tmp/nomad.zip" "/tmp/nomad" $NOMAD_HOME "$NOMAD_HOME/nomad"
     install_from_remote "https://releases.hashicorp.com/terraform/1.5.4/terraform_1.5.4_linux_amd64.zip" "/tmp/terraform.zip" "/tmp/terraform" $TERRAFORM_HOME "$TERRAFORM_HOME/terraform"
     install_from_rust "tokei" "tokei"
